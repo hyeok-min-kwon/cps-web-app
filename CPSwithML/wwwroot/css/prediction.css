@@ -1,0 +1,95 @@
+/* CPS 고장 예측 시스템 커스텀 스타일 */
+
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-header {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+
+/* 슬라이더 스타일링 */
+.form-range {
+    height: 8px;
+}
+
+.form-range::-webkit-slider-thumb {
+    background-color: #0d6efd;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-range::-moz-range-thumb {
+    background-color: #0d6efd;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 진행 표시줄 애니메이션 */
+.progress {
+    height: 25px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+    font-weight: 600;
+}
+
+/* 결과 카드 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.failure-types > div {
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+.failure-types > div:nth-child(1) { animation-delay: 0.1s; }
+.failure-types > div:nth-child(2) { animation-delay: 0.2s; }
+.failure-types > div:nth-child(3) { animation-delay: 0.3s; }
+.failure-types > div:nth-child(4) { animation-delay: 0.4s; }
+.failure-types > div:nth-child(5) { animation-delay: 0.5s; }
+
+/* Alert 스타일 개선 */
+.alert-heading {
+    font-weight: 700;
+}
+
+/* 버튼 호버 효과 */
+.btn-primary {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 992px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+/* 데이터 값 표시 강조 */
+#airTempValue, #processTempValue, #speedValue, #torqueValue, #toolWearValue {
+    font-weight: 600;
+    color: #0d6efd;
+}

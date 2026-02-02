@@ -1,0 +1,182 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "CPS 고장 예측 시스템";
+}
+
+<div class="container mt-4">
+    <h1 class="display-4 text-center mb-4">🏭 CPS 고장 예측 시스템</h1>
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>오류!</strong> @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">센서 데이터 입력</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="SensorData.Type" class="form-label">제품 타입</label>
+                            <select asp-for="SensorData.Type" class="form-select">
+                                <option value="L">L (Low Quality)</option>
+                                <option value="M" selected>M (Medium Quality)</option>
+                                <option value="H">H (High Quality)</option>
+                            </select>
+                            <span asp-validation-for="SensorData.Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SensorData.AirTemperature" class="form-label">
+                                공기 온도 (K): <span id="airTempValue">@Model.SensorData.AirTemperature</span>
+                            </label>
+                            <input asp-for="SensorData.AirTemperature" type="range" class="form-range"
+                                   min="290" max="310" step="0.1"
+                                   oninput="document.getElementById('airTempValue').textContent = this.value">
+                            <small class="text-muted">범위: 290K - 310K</small>
+                            <span asp-validation-for="SensorData.AirTemperature" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SensorData.ProcessTemperature" class="form-label">
+                                공정 온도 (K): <span id="processTempValue">@Model.SensorData.ProcessTemperature</span>
+                            </label>
+                            <input asp-for="SensorData.ProcessTemperature" type="range" class="form-range"
+                                   min="300" max="315" step="0.1"
+                                   oninput="document.getElementById('processTempValue').textContent = this.value">
+                            <small class="text-muted">범위: 300K - 315K</small>
+                            <span asp-validation-for="SensorData.ProcessTemperature" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SensorData.RotationalSpeed" class="form-label">
+                                회전 속도 (rpm): <span id="speedValue">@Model.SensorData.RotationalSpeed</span>
+                            </label>
+                            <input asp-for="SensorData.RotationalSpeed" type="range" class="form-range"
+                                   min="1000" max="3000" step="10"
+                                   oninput="document.getElementById('speedValue').textContent = this.value">
+                            <small class="text-muted">범위: 1000rpm - 3000rpm</small>
+                            <span asp-validation-for="SensorData.RotationalSpeed" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SensorData.Torque" class="form-label">
+                                토크 (Nm): <span id="torqueValue">@Model.SensorData.Torque</span>
+                            </label>
+                            <input asp-for="SensorData.Torque" type="range" class="form-range"
+                                   min="0" max="100" step="0.1"
+                                   oninput="document.getElementById('torqueValue').textContent = this.value">
+                            <small class="text-muted">범위: 0Nm - 100Nm</small>
+                            <span asp-validation-for="SensorData.Torque" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SensorData.ToolWear" class="form-label">
+                                공구 마모 (분): <span id="toolWearValue">@Model.SensorData.ToolWear</span>
+                            </label>
+                            <input asp-for="SensorData.ToolWear" type="range" class="form-range"
+                                   min="0" max="300" step="1"
+                                   oninput="document.getElementById('toolWearValue').textContent = this.value">
+                            <small class="text-muted">범위: 0분 - 300분</small>
+                            <span asp-validation-for="SensorData.ToolWear" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                🔍 고장 예측하기
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mt-4 mt-lg-0">
+            @if (Model.PredictionResult != null)
+            {
+                <div class="card shadow-sm">
+                    <div class="card-header @(Model.PredictionResult.MachineFailure.Prediction == 1 ? "bg-danger" : "bg-success") text-white">
+                        <h5 class="mb-0">예측 결과</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            @if (Model.PredictionResult.MachineFailure.Prediction == 1)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    <h4 class="alert-heading">⚠️ 고장 예상</h4>
+                                    <p class="mb-0">고장 확률: <strong>@((Model.PredictionResult.MachineFailure.Probability * 100).ToString("F1"))%</strong></p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-success" role="alert">
+                                    <h4 class="alert-heading">✅ 정상 작동</h4>
+                                    <p class="mb-0">정상 확률: <strong>@(((1 - Model.PredictionResult.MachineFailure.Probability) * 100).ToString("F1"))%</strong></p>
+                                </div>
+                            }
+                        </div>
+
+                        <h6 class="mb-3">고장 타입별 확률</h6>
+                        <div class="failure-types">
+                            @foreach (var failure in Model.PredictionResult.FailureTypes.OrderByDescending(f => f.Value))
+                            {
+                                var percentage = failure.Value * 100;
+                                var progressClass = percentage > 50 ? "bg-danger" : (percentage > 25 ? "bg-warning" : "bg-info");
+
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span><strong>@GetFailureTypeName(failure.Key)</strong></span>
+                                        <span>@percentage.ToString("F1")%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar @progressClass" role="progressbar"
+                                             style="width: @percentage%"
+                                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card shadow-sm">
+                    <div class="card-body text-center text-muted">
+                        <p class="mt-5 mb-5">
+                            <i class="bi bi-arrow-left-circle" style="font-size: 3rem;"></i>
+                        </p>
+                        <p>센서 데이터를 입력하고<br>예측 버튼을 클릭하세요.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+@functions {
+    string GetFailureTypeName(string code)
+    {
+        return code switch
+        {
+            "TWF" => "Tool Wear Failure (공구 마모)",
+            "HDF" => "Heat Dissipation Failure (열 방출)",
+            "PWF" => "Power Failure (전력)",
+            "OSF" => "Overstrain Failure (과부하)",
+            "RNF" => "Random Failure (랜덤)",
+            _ => code
+        };
+    }
+}

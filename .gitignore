@@ -1,0 +1,58 @@
+# Claude Code
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+*.log
+*.pyc
+
+# ML Models
+ml_model/models/*.pkl
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+.vs/
+.vscode/
+*.dll
+*.exe
+*.pdb
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+*.bak
+
+# IDE
+.idea/
+*.iml
+*.code-workspace
+
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+nohup.out
+
+# Logs
+*.log
+logs/
+
